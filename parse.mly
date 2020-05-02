@@ -40,6 +40,8 @@ appexp:
 
 infexp:
   | appexp { $1 }
+  | infexp PLUS appexp { IAdd($1, $3) }
+  | infexp MINUS appexp { ISub($1, $3) }
   ;
 
 exp:
