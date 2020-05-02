@@ -33,6 +33,7 @@ let rec unify c =
   | (s,t)::c' ->
       if s==t then unify c'
       else match (s,t) with
+      (* 出現検査をしていない *)
       | (Var _,_) -> Compose ((unify(assignC (Set [(s,t)]) c')),Set [(s,t)])
       | (_,Var _) -> Compose ((unify(assignC (Set [(t,s)]) c')),Set [(t,s)])
       | (Fun (s1,s2),Fun (t1,t2)) -> unify((s1,t1)::(s2,t2)::c')
