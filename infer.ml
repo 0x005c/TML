@@ -42,7 +42,7 @@ let rec unify c =
 let rec inferC c e =
   match e with
   | Exp.Int _ -> Some Type.Int
-  | Exp.IAdd (e1,e2) ->
+  | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) ->
       let (t1,t2) = (fresh,fresh) in
       let (t1',t2') =
         match (inferC c e1,inferC c e2) with
