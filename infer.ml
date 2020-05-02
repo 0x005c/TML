@@ -18,6 +18,9 @@ let fresh =
 ;;
 
 let rec assign s t =
+  match t with
+  | Fun (t1,t2) -> Fun (assign s t1,assign s t2)
+  | _ ->
   match s with
   | Set [] -> t
   | Set ((t',u)::s') -> if t==t' then u
