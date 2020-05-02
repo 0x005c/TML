@@ -21,7 +21,7 @@ let rec assign s t =
   match s with
   | Set [] -> t
   | Set ((t',u)::s') -> if t==t' then u
-                       else assign (Set s') t
+                        else assign (Set s') t
   | Compose (s1,s2) -> assign s1 (assign s2 t)
 ;;
 
