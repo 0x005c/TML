@@ -15,12 +15,17 @@ open Exp
 %token COLON
 %token LPAREN
 %token RPAREN
+%token EOF
 
-%type <Exp.exp> atexp appexp infexp exp
+%type <Exp.exp> top atexp appexp infexp exp
 
-%start exp
+%start top
 
 %%
+
+top:
+  | exp EOF { $1 }
+  ;
 
 atexp:
   | INT { Int($1) }
@@ -30,6 +35,7 @@ atexp:
 
 appexp:
   | atexp { $1 }
+  | appexp atexp { Apply($1, $2) }
   ;
 
 infexp:
