@@ -8,6 +8,7 @@ let digit = ['0'-'9']
 
 rule token = parse
 | space+ { token lexbuf }
+| eof { EOF }
 | "int" { TY_INT }
 | "fun" { FUN }
 | "let" { LET }
