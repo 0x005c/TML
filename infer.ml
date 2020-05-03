@@ -43,20 +43,30 @@ let rec unify c =
       | (_,_) -> raise (UnificationError (s,t))
 ;;
 
-let rec inferC c e =
+let rec inferC gamma c e =
   match e with
   | Exp.Int _ -> Some Type.Int
   | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) ->
-      let (t1,t2) = (fresh,fresh) in
-      let (t1',t2') =
-        match (inferC c e1,inferC c e2) with
+      let (t1,t2) = (inferC gamma c e1,inferC gamma c e2) in
+      let (t1,t2) =
+        match (t1,t2) with
         | (None,_) | (_,None) -> raise (InferenceError e)
         | (Some s,Some t) -> (s,t)
       in
-      let c' = (t1, Type.Int)::(t2, Type.Int)::(t1,t1')::(t2,t2')::c in
-      let _ = unify(c') in
-      Some Type.Int
-  | _ -> None
+      let c' = (t1,Type.Int)::(t2,Type.Int)::c in
+      let asgn = unify(c') in
+      if assign asgn t1 == assign asgn t2 then Some Type.Int
+      else raise (InferenceError e)
+  | Exp.Lambda (s,e) ->
+      let t1 = fresh in
+      let gamma' = (s,t1)::gamma in
+      let t2 =
+        match inferC gamma' c e with
+        | Some a -> a
+        | None -> raise (InferenceError e)
+      in
+      Some (Fun (t1,t2))
+  | _ -> Some fresh
 ;;
 
-let infer e = inferC [] e ;;
+let infer e = inferC [] [] e ;;
