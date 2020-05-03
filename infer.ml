@@ -68,7 +68,7 @@ let rec inferC gamma c e =
       Fun (t1,t2)
   | Exp.Var s ->
       lookupG gamma s
-  | _ -> fresh()
+  | _ -> raise (InferenceError e)
 ;;
 
 let infer e = inferC [] [] e ;;
