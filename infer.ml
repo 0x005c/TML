@@ -13,8 +13,9 @@ exception InferenceError of Exp.exp ;;
 let x = ref 0 ;;
 
 let fresh =
-  x := !x+1;
-  Type.Var !x
+  fun () ->
+    x := !x+1;
+    Type.Var !x
 ;;
 
 let rec assign s t =
@@ -45,28 +46,19 @@ let rec unify c =
 
 let rec inferC gamma c e =
   match e with
-  | Exp.Int _ -> Some Type.Int
+  | Exp.Int _ -> Type.Int
   | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) ->
       let (t1,t2) = (inferC gamma c e1,inferC gamma c e2) in
-      let (t1,t2) =
-        match (t1,t2) with
-        | (None,_) | (_,None) -> raise (InferenceError e)
-        | (Some s,Some t) -> (s,t)
-      in
       let c' = (t1,Type.Int)::(t2,Type.Int)::c in
       let asgn = unify(c') in
-      if assign asgn t1 == assign asgn t2 then Some Type.Int
+      if assign asgn t1 == assign asgn t2 then Type.Int
       else raise (InferenceError e)
   | Exp.Lambda (s,e) ->
-      let t1 = fresh in
+      let t1 = fresh() in
       let gamma' = (s,t1)::gamma in
-      let t2 =
-        match inferC gamma' c e with
-        | Some a -> a
-        | None -> raise (InferenceError e)
-      in
-      Some (Fun (t1,t2))
-  | _ -> Some fresh
+      let t2 = inferC gamma' c e in
+      Fun (t1,t2)
+  | _ -> fresh()
 ;;
 
 let infer e = inferC [] [] e ;;
