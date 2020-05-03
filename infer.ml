@@ -68,7 +68,13 @@ let rec inferC gamma c e =
       Fun (t1,t2)
   | Exp.Var s ->
       lookupG gamma s
-  | _ -> raise (InferenceError e)
+  | Exp.Apply (e1,e2) ->
+      (* 型変数は常にユニークに生成されるため、C1, C2に分けなくていい（はず） *)
+      let (t1,t2) = (inferC gamma c e1,inferC gamma c e2) in
+      let x = fresh() in
+      let c' = (t1,Fun (t2,x))::c in
+      let asgn = unify c' in
+      assign asgn x
 ;;
 
 let infer e = inferC [] [] e ;;
