@@ -46,5 +46,5 @@ infexp:
 
 exp:
   | infexp { $1 }
+  | FUN IDENT ARROW exp { Lambda ($2, $4) }
   ;
-
