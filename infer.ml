@@ -9,6 +9,7 @@ type assign =
 
 exception UnificationError of Type.typ * Type.typ ;;
 exception InferenceError of Exp.exp ;;
+exception UnknownVariableError of string ;;
 
 let x = ref 0 ;;
 
@@ -44,6 +45,13 @@ let rec unify c =
       | (_,_) -> raise (UnificationError (s,t))
 ;;
 
+let rec lookupG gamma s =
+  match gamma with
+  | [] -> raise (UnknownVariableError s)
+  | (s',t)::gamma' -> if String.equal s s' then t
+                      else lookupG gamma' s
+;;
+
 let rec inferC gamma c e =
   match e with
   | Exp.Int _ -> Type.Int
@@ -58,6 +66,8 @@ let rec inferC gamma c e =
       let gamma' = (s,t1)::gamma in
       let t2 = inferC gamma' c e in
       Fun (t1,t2)
+  | Exp.Var s ->
+      lookupG gamma s
   | _ -> fresh()
 ;;
 
