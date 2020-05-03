@@ -3,6 +3,7 @@ open Exp
 %}
 
 %token <int> INT
+%token <float> FLOAT
 %token <string> IDENT
 %token TY_INT
 %token FUN
@@ -10,6 +11,8 @@ open Exp
 %token IN
 %token PLUS
 %token MINUS
+%token PLUSDOT
+%token MINUSDOT
 %token EQUAL
 %token ARROW
 %token COLON
@@ -29,6 +32,7 @@ top:
 
 atexp:
   | INT { Int($1) }
+  | FLOAT { Float($1) }
   | IDENT { Var($1) }
   | LPAREN exp RPAREN { $2 }
   ;
@@ -42,6 +46,8 @@ infexp:
   | appexp { $1 }
   | infexp PLUS appexp { IAdd($1, $3) }
   | infexp MINUS appexp { ISub($1, $3) }
+  | infexp PLUSDOT appexp { FAdd($1, $3) }
+  | infexp MINUSDOT appexp { FSub($1, $3) }
   ;
 
 exp:

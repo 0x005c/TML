@@ -15,10 +15,13 @@ rule token = parse
 | "in" { IN }
 | "+" { PLUS }
 | "-" { MINUS }
+| "+." { PLUSDOT }
+| "-." { MINUSDOT }
 | "=" { EQUAL }
 | "->" { ARROW }
 | ":" { COLON }
 | "(" { LPAREN }
 | ")" { RPAREN }
+| digit+"."digit+ { FLOAT(float_of_string(Lexing.lexeme lexbuf)) }
 | digit+ { INT(int_of_string(Lexing.lexeme lexbuf)) }
 | identc(identc|digit)* { IDENT(Lexing.lexeme lexbuf) }
