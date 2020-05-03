@@ -1,5 +1,3 @@
-open Exp
-open Type
 open List
 
 type assign =
@@ -21,7 +19,7 @@ let fresh =
 
 let rec assign s t =
   match t with
-  | Fun (t1,t2) -> Fun (assign s t1,assign s t2)
+  | Type.Fun (t1,t2) -> Type.Fun (assign s t1,assign s t2)
   | _ ->
   match s with
   | Set [] -> t
@@ -39,9 +37,9 @@ let rec unify c =
       if s==t then unify c'
       else match (s,t) with
       (* 出現検査をしていない *)
-      | (Var _,_) -> Compose ((unify(assignC (Set [(s,t)]) c')),Set [(s,t)])
-      | (_,Var _) -> Compose ((unify(assignC (Set [(t,s)]) c')),Set [(t,s)])
-      | (Fun (s1,s2),Fun (t1,t2)) -> unify((s1,t1)::(s2,t2)::c')
+      | (Type.Var _,_) -> Compose ((unify(assignC (Set [(s,t)]) c')),Set [(s,t)])
+      | (_,Type.Var _) -> Compose ((unify(assignC (Set [(t,s)]) c')),Set [(t,s)])
+      | (Type.Fun (s1,s2),Type.Fun (t1,t2)) -> unify((s1,t1)::(s2,t2)::c')
       | (_,_) -> raise (UnificationError (s,t))
 ;;
 
@@ -65,14 +63,14 @@ let rec inferC gamma c e =
       let t1 = fresh() in
       let gamma' = (s,t1)::gamma in
       let t2 = inferC gamma' c e in
-      Fun (t1,t2)
+      Type.Fun (t1,t2)
   | Exp.Var s ->
       lookupG gamma s
   | Exp.Apply (e1,e2) ->
       (* 型変数は常にユニークに生成されるため、C1, C2に分けなくていい（はず） *)
       let (t1,t2) = (inferC gamma c e1,inferC gamma c e2) in
       let x = fresh() in
-      let c' = (t1,Fun (t2,x))::c in
+      let c' = (t1,Type.Fun (t2,x))::c in
       let asgn = unify c' in
       assign asgn x
 ;;
