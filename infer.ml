@@ -60,4 +60,3 @@ let rec inferC c e =
 ;;
 
 let infer e = inferC [] e ;;
-

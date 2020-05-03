@@ -22,4 +22,3 @@ rule token = parse
 | ")" { RPAREN }
 | digit+ { INT(int_of_string(Lexing.lexeme lexbuf)) }
 | identc(identc|digit)* { IDENT(Lexing.lexeme lexbuf) }
-
