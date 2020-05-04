@@ -54,13 +54,13 @@ let rec inferC gamma c e =
   match e with
   | Exp.Int _ -> Type.Int
   | Exp.Float _ -> Type.Float
-  | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) ->
+  | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) | Exp.IMul (e1,e2) | Exp.IDiv (e1,e2) ->
       let (t1,t2) = (inferC gamma c e1,inferC gamma c e2) in
       let c' = (t1,Type.Int)::(t2,Type.Int)::c in
       let asgn = unify(c') in
       if assign asgn t1 == assign asgn t2 then Type.Int
       else raise (InferenceError e)
-  | Exp.FAdd (e1,e2) | Exp.FSub (e1,e2) ->
+  | Exp.FAdd (e1,e2) | Exp.FSub (e1,e2) | Exp.FMul (e1,e2) | Exp.FDiv (e1,e2) ->
       let (t1,t2) = (inferC gamma c e1,inferC gamma c e2) in
       let c' = (t1,Type.Float)::(t2,Type.Float)::c in
       let asgn = unify(c') in

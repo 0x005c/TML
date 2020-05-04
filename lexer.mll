@@ -15,8 +15,12 @@ rule token = parse
 | "in" { IN }
 | "+" { PLUS }
 | "-" { MINUS }
+| "*" { STAR }
+| "/" { SLASH }
 | "+." { PLUSDOT }
 | "-." { MINUSDOT }
+| "*." { STARDOT }
+| "/." { SLASHDOT }
 | "=" { EQUAL }
 | "->" { ARROW }
 | ":" { COLON }

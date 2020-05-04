@@ -11,8 +11,12 @@ open Exp
 %token IN
 %token PLUS
 %token MINUS
+%token STAR
+%token SLASH
 %token PLUSDOT
 %token MINUSDOT
+%token STARDOT
+%token SLASHDOT
 %token EQUAL
 %token ARROW
 %token COLON
@@ -21,6 +25,9 @@ open Exp
 %token EOF
 
 %type <Exp.exp> top atexp appexp infexp exp
+
+%left PLUS MINUS PLUSDOT MINUSDOT
+%left STAR SLASH STARDOT SLASHDOT
 
 %start top
 
@@ -44,10 +51,14 @@ appexp:
 
 infexp:
   | appexp { $1 }
-  | infexp PLUS appexp { IAdd($1, $3) }
-  | infexp MINUS appexp { ISub($1, $3) }
-  | infexp PLUSDOT appexp { FAdd($1, $3) }
-  | infexp MINUSDOT appexp { FSub($1, $3) }
+  | infexp PLUS infexp { IAdd($1, $3) }
+  | infexp MINUS infexp { ISub($1, $3) }
+  | infexp STAR infexp { IMul($1, $3) }
+  | infexp SLASH infexp { IDiv($1, $3) }
+  | infexp PLUSDOT infexp { FAdd($1, $3) }
+  | infexp MINUSDOT infexp { FSub($1, $3) }
+  | infexp STARDOT infexp { FMul($1, $3) }
+  | infexp SLASHDOT infexp { FDiv($1, $3) }
   ;
 
 exp:
