@@ -8,6 +8,7 @@ type exp =
   | FAdd of exp * exp
   | FSub of exp * exp
   | Lambda of string * exp
+;;
 
 let rec exp_to_string e =
   match e with
@@ -20,3 +21,4 @@ let rec exp_to_string e =
   | FAdd (e1,e2) -> "("^exp_to_string e1^"+."^exp_to_string e2^")"
   | FSub (e1,e2) -> "("^exp_to_string e1^"-."^exp_to_string e2^")"
   | Lambda (s,e) -> "(fun "^s^"->"^exp_to_string e^")"
+;;
