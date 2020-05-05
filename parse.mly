@@ -12,6 +12,9 @@ open Exp
 %token AND
 %token OR
 %token TY_INT
+%token IF
+%token THEN
+%token ELSE
 %token FUN
 %token LET
 %token IN
@@ -81,4 +84,5 @@ infexp:
 exp:
   | infexp { $1 }
   | FUN IDENT ARROW exp { Fun ($2, $4) }
+  | IF exp THEN exp ELSE exp { If ($2,$4,$6) }
   ;

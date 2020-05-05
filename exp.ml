@@ -3,6 +3,7 @@ type exp =
   | Float of float
   | Bool of bool
   | Var of string
+  | If of exp * exp * exp
   | Apply of exp * exp
   | Not of exp
   | And of exp * exp
@@ -23,6 +24,8 @@ let rec exp_to_string e =
   | Int i -> string_of_int i
   | Float f -> string_of_float f
   | Bool b -> string_of_bool b
+  | If (e1,e2,e3) -> "(if "^exp_to_string e1^" then "
+      ^exp_to_string e2^" else "^exp_to_string e3^")"
   | Var s -> s
   | Apply (e1,e2) -> "("^exp_to_string e1^" "^exp_to_string e2^")"
   | Not e -> "(not "^exp_to_string e^")"
