@@ -36,7 +36,7 @@ let rec eval env e =
   | Exp.FSub (e1,e2) -> Float (get_f (eval env e1) -. get_f (eval env e2))
   | Exp.FMul (e1,e2) -> Float (get_f (eval env e1) *. get_f (eval env e2))
   | Exp.FDiv (e1,e2) -> Float (get_f (eval env e1) /. get_f (eval env e2))
-  | Exp.Lambda (s,e) -> Closure (s,env,e)
+  | Exp.Fun (s,e) -> Closure (s,env,e)
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e

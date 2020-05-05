@@ -64,7 +64,7 @@ let rec inferC gamma e =
       let c1 = (t1,Type.Float)::c1 in
       let c2 = (t2,Type.Float)::c2 in
       (Type.Float,c1@c2)
-  | Exp.Lambda (s,e) ->
+  | Exp.Fun (s,e) ->
       let t1 = fresh() in
       let gamma' = (s,t1)::gamma in
       let (t2,c) = inferC gamma' e in
