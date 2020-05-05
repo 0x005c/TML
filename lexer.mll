@@ -10,6 +10,9 @@ rule token = parse
 | space+ { token lexbuf }
 | eof { EOF }
 | "int" { TY_INT }
+| "bool" { TY_BOOL }
+| "true" { TRUE }
+| "false" { FALSE }
 | "fun" { FUN }
 | "let" { LET }
 | "in" { IN }

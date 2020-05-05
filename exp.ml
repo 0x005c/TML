@@ -1,6 +1,7 @@
 type exp =
   | Int of int
   | Float of float
+  | Bool of bool
   | Var of string
   | Apply of exp * exp
   | IAdd of exp * exp
@@ -18,6 +19,7 @@ let rec exp_to_string e =
   match e with
   | Int i -> string_of_int i
   | Float f -> string_of_float f
+  | Bool b -> string_of_bool b
   | Var s -> s
   | Apply (e1,e2) -> "("^exp_to_string e1^" "^exp_to_string e2^")"
   | IAdd (e1,e2) -> "("^exp_to_string e1^"+"^exp_to_string e2^")"

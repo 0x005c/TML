@@ -5,6 +5,9 @@ open Exp
 %token <int> INT
 %token <float> FLOAT
 %token <string> IDENT
+%token TY_BOOL
+%token TRUE
+%token FALSE
 %token TY_INT
 %token FUN
 %token LET
@@ -40,6 +43,8 @@ top:
 atexp:
   | INT { Int($1) }
   | FLOAT { Float($1) }
+  | TRUE { Bool true }
+  | FALSE { Bool false }
   | IDENT { Var($1) }
   | LPAREN exp RPAREN { $2 }
   ;

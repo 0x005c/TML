@@ -26,6 +26,7 @@ let rec eval env e =
   match e with
   | Exp.Int i -> Int i
   | Exp.Float f -> Float f
+  | Exp.Bool b -> Bool b
   | Exp.Var s -> lookupE env s
   | Exp.Apply (e1,e2) -> apply env e1 e2
   | Exp.IAdd (e1,e2) -> Int (get_i (eval env e1) + get_i (eval env e2))
