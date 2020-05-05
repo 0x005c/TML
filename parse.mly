@@ -85,4 +85,5 @@ exp:
   | infexp { $1 }
   | FUN IDENT ARROW exp { Fun ($2, $4) }
   | IF exp THEN exp ELSE exp { If ($2,$4,$6) }
+  | LET IDENT EQUAL exp IN exp { Let ($2,$4,$6) }
   ;

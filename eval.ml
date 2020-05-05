@@ -38,6 +38,7 @@ let rec eval env e =
   | Exp.Not e -> Bool (not (get_b (eval env e)))
   | Exp.If (e1,e2,e3) -> if (get_b (eval env e1)) then eval env e2
                                                   else eval env e3
+  | Exp.Let (s,e1,e2) -> eval ((s,eval env e1)::env) e2
   | Exp.And (e1,e2) -> Bool (get_b (eval env e1) && get_b (eval env e2))
   | Exp.Or (e1,e2) -> Bool (get_b (eval env e1) || get_b (eval env e2))
   | Exp.IAdd (e1,e2) -> Int (get_i (eval env e1) + get_i (eval env e2))

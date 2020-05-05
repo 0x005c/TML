@@ -65,6 +65,11 @@ let rec inferC gamma e =
       let (t3,c3) = inferC gamma e3 in
       let c = (t1,Type.Bool)::(t2,t3)::(c1 @ c2 @ c3) in
       (t2,c)
+  | Exp.Let (s,e1,e2) ->
+      let (t1,c1) = inferC gamma e1 in
+      let t1 = assign (unify c1) t1 in
+      let gamma' = (s,t1)::gamma in
+      inferC gamma' e2
   | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
       let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
       let c1 = (t1,Type.Bool)::c1 in
