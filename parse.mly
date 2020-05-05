@@ -8,6 +8,7 @@ open Exp
 %token TY_BOOL
 %token TRUE
 %token FALSE
+%token NOT
 %token TY_INT
 %token FUN
 %token LET
@@ -41,6 +42,7 @@ top:
   ;
 
 atexp:
+  | NOT atexp { Not $2 }
   | INT { Int($1) }
   | FLOAT { Float($1) }
   | TRUE { Bool true }

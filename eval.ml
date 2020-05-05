@@ -15,6 +15,12 @@ let get_f v =
   | _ -> raise UnexpectedError
 ;;
 
+let get_b v =
+  match v with
+  | Bool b -> b
+  | _ -> raise UnexpectedError
+;;
+
 let rec lookupE env s =
   match env with
   | [] -> raise (EvaluationError (Exp.Var s))
@@ -29,6 +35,7 @@ let rec eval env e =
   | Exp.Bool b -> Bool b
   | Exp.Var s -> lookupE env s
   | Exp.Apply (e1,e2) -> apply env e1 e2
+  | Exp.Not e -> Bool (not (get_b (eval env e)))
   | Exp.IAdd (e1,e2) -> Int (get_i (eval env e1) + get_i (eval env e2))
   | Exp.ISub (e1,e2) -> Int (get_i (eval env e1) - get_i (eval env e2))
   | Exp.IMul (e1,e2) -> Int (get_i (eval env e1) * get_i (eval env e2))

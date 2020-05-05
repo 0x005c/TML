@@ -13,6 +13,7 @@ rule token = parse
 | "bool" { TY_BOOL }
 | "true" { TRUE }
 | "false" { FALSE }
+| "not" { NOT }
 | "fun" { FUN }
 | "let" { LET }
 | "in" { IN }
