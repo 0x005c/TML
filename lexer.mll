@@ -14,6 +14,8 @@ rule token = parse
 | "true" { TRUE }
 | "false" { FALSE }
 | "not" { NOT }
+| "and" { AND }
+| "or" { OR }
 | "fun" { FUN }
 | "let" { LET }
 | "in" { IN }

@@ -9,6 +9,8 @@ open Exp
 %token TRUE
 %token FALSE
 %token NOT
+%token AND
+%token OR
 %token TY_INT
 %token FUN
 %token LET
@@ -29,6 +31,9 @@ open Exp
 %token EOF
 
 %type <Exp.exp> top atexp appexp infexp exp
+
+%left OR
+%left AND
 
 %left PLUS MINUS
 %left STAR SLASH
@@ -69,6 +74,8 @@ infexp:
   | infexp MINUSDOT infexp { FSub($1, $3) }
   | infexp STARDOT infexp { FMul($1, $3) }
   | infexp SLASHDOT infexp { FDiv($1, $3) }
+  | infexp OR infexp { Or($1,$3) }
+  | infexp AND infexp { And($1,$3) }
   ;
 
 exp:

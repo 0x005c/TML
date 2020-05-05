@@ -5,6 +5,8 @@ type exp =
   | Var of string
   | Apply of exp * exp
   | Not of exp
+  | And of exp * exp
+  | Or of exp * exp
   | IAdd of exp * exp
   | ISub of exp * exp
   | IMul of exp * exp
@@ -24,6 +26,8 @@ let rec exp_to_string e =
   | Var s -> s
   | Apply (e1,e2) -> "("^exp_to_string e1^" "^exp_to_string e2^")"
   | Not e -> "(not "^exp_to_string e^")"
+  | And (e1,e2) -> "("^exp_to_string e1^" and "^exp_to_string e2^")"
+  | Or (e1,e2) -> "("^exp_to_string e1^" or "^exp_to_string e2^")"
   | IAdd (e1,e2) -> "("^exp_to_string e1^"+"^exp_to_string e2^")"
   | ISub (e1,e2) -> "("^exp_to_string e1^"-"^exp_to_string e2^")"
   | IMul (e1,e2) -> "("^exp_to_string e1^"*"^exp_to_string e2^")"

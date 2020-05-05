@@ -59,6 +59,11 @@ let rec inferC gamma e =
       let (t,c) = inferC gamma e in
       let c' = (t,Type.Bool)::c in
       (Type.Bool,c')
+  | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
+      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let c1 = (t1,Type.Bool)::c1 in
+      let c2 = (t2,Type.Bool)::c2 in
+      (Type.Bool,c1@c2)
   | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) | Exp.IMul (e1,e2) | Exp.IDiv (e1,e2) ->
       let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
       let c1 = (t1,Type.Int)::c1 in
