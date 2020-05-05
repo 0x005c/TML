@@ -30,8 +30,11 @@ open Exp
 
 %type <Exp.exp> top atexp appexp infexp exp
 
-%left PLUS MINUS PLUSDOT MINUSDOT
-%left STAR SLASH STARDOT SLASHDOT
+%left PLUS MINUS
+%left STAR SLASH
+
+%left PLUSDOT MINUSDOT
+%left STARDOT SLASHDOT
 
 %start top
 
