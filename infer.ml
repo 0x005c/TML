@@ -43,62 +43,96 @@ let rec unify c =
       | (_,_) -> raise (UnificationError (s,t))
 ;;
 
-let rec lookupG gamma s =
-  match gamma with
+let rec lookup env s =
+  match env with
   | [] -> raise (UnknownVariableError s)
-  | (s',t)::gamma' -> if String.equal s s' then t
-                      else lookupG gamma' s
+  | (s',t)::env -> if String.equal s s' then t
+                   else lookup env s
 ;;
 
-let rec inferC gamma e =
+let addT env (s,t) =
+  let (tenv,eenv) = env in
+  let tenv = (s,t)::tenv in
+  (tenv,eenv)
+;;
+
+let addE env (s,e) =
+  let (tenv,eenv) = env in
+  let eenv = (s,e)::eenv in
+  (tenv,eenv)
+;;
+
+let rec assign_let (s,e1) e2 =
+  let alet = assign_let (s,e1) in
+  match e2 with
+  | Exp.Var s' -> if String.equal s s' then e1 else e2
+  | Exp.Let (s',e3,e4) -> if String.equal s s' then e2 else Exp.Let (s',alet e3,alet e4)
+  | Exp.Fun (s',e) -> if String.equal s s' then e2 else Exp.Fun (s',alet e)
+  | Exp.Int _ | Exp.Float _ | Exp.Bool _ -> e2
+  | Exp.Not e -> Exp.Not (alet e)
+  | Exp.If (e3,e4,e5) -> Exp.If (alet e3,alet e4,alet e5)
+  | Exp.And (e3,e4) -> Exp.And (alet e3,alet e4)
+  | Exp.Or (e3,e4) -> Exp.Or (alet e3,alet e4)
+  | Exp.IAdd (e3,e4) -> Exp.IAdd (alet e3,alet e4)
+  | Exp.ISub (e3,e4) -> Exp.ISub (alet e3,alet e4)
+  | Exp.IMul (e3,e4) -> Exp.IMul (alet e3,alet e4)
+  | Exp.IDiv (e3,e4) -> Exp.IDiv (alet e3,alet e4)
+  | Exp.FAdd (e3,e4) -> Exp.FAdd (alet e3,alet e4)
+  | Exp.FSub (e3,e4) -> Exp.FSub (alet e3,alet e4)
+  | Exp.FMul (e3,e4) -> Exp.FMul (alet e3,alet e4)
+  | Exp.FDiv (e3,e4) -> Exp.FDiv (alet e3,alet e4)
+  | Exp.Eq (e3,e4) -> Exp.Eq (alet e3,alet e4)
+  | Exp.Apply (e3,e4) -> Exp.Apply (alet e3,alet e4)
+;;
+
+let rec inferC env e =
   match e with
   | Exp.Int _ -> (Type.Int,[])
   | Exp.Float _ -> (Type.Float,[])
   | Exp.Bool _ -> (Type.Bool,[])
   | Exp.Not e ->
-      let (t,c) = inferC gamma e in
+      let (t,c) = inferC env e in
       let c' = (t,Type.Bool)::c in
       (Type.Bool,c')
   | Exp.If (e1,e2,e3) ->
-      let (t1,c1) = inferC gamma e1 in
-      let (t2,c2) = inferC gamma e2 in
-      let (t3,c3) = inferC gamma e3 in
+      let (t1,c1) = inferC env e1 in
+      let (t2,c2) = inferC env e2 in
+      let (t3,c3) = inferC env e3 in
       let c = (t1,Type.Bool)::(t2,t3)::(c1 @ c2 @ c3) in
       (t2,c)
   | Exp.Let (s,e1,e2) ->
-      let (t1,c1) = inferC gamma e1 in
-      let t1 = assign (unify c1) t1 in
-      let gamma' = (s,t1)::gamma in
-      inferC gamma' e2
+      let e2 = assign_let (s,e1) e2 in
+      let _ = inferC env e1 in
+      inferC env e2
   | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c1 = (t1,Type.Bool)::c1 in
       let c2 = (t2,Type.Bool)::c2 in
       (Type.Bool,c1@c2)
   | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) | Exp.IMul (e1,e2) | Exp.IDiv (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c1 = (t1,Type.Int)::c1 in
       let c2 = (t2,Type.Int)::c2 in
       (Type.Int,c1@c2)
   | Exp.FAdd (e1,e2) | Exp.FSub (e1,e2) | Exp.FMul (e1,e2) | Exp.FDiv (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c1 = (t1,Type.Float)::c1 in
       let c2 = (t2,Type.Float)::c2 in
       (Type.Float,c1@c2)
   | Exp.Eq (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c = (t1,t2)::(c1@c2)  in
       (Type.Bool,c)
   | Exp.Fun (s,e) ->
       let t1 = fresh() in
-      let gamma' = (s,t1)::gamma in
-      let (t2,c) = inferC gamma' e in
+      let env = (s,t1)::env in
+      let (t2,c) = inferC env e in
       let t1 = assign (unify c) t1 in
       (Type.Fun (t1,t2),c)
   | Exp.Var s ->
-      (lookupG gamma s,[])
+      (lookup env s,[])
   | Exp.Apply (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let x = fresh() in
       let c' = (t1,Type.Fun (t2,x))::c1@c2 in
       (x,c')
