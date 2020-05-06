@@ -85,6 +85,10 @@ let rec inferC gamma e =
       let c1 = (t1,Type.Float)::c1 in
       let c2 = (t2,Type.Float)::c2 in
       (Type.Float,c1@c2)
+  | Exp.Eq (e1,e2) ->
+      let ((t1,c1),(t2,c2)) = (inferC gamma e1,inferC gamma e2) in
+      let c = (t1,t2)::(c1@c2)  in
+      (Type.Bool,c)
   | Exp.Fun (s,e) ->
       let t1 = fresh() in
       let gamma' = (s,t1)::gamma in

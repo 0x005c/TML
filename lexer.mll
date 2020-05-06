@@ -31,6 +31,7 @@ rule token = parse
 | "*." { STARDOT }
 | "/." { SLASHDOT }
 | "=" { EQUAL }
+| "==" { EQEQ }
 | "->" { ARROW }
 | ":" { COLON }
 | "(" { LPAREN }

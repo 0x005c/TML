@@ -17,6 +17,7 @@ type exp =
   | FSub of exp * exp
   | FMul of exp * exp
   | FDiv of exp * exp
+  | Eq of exp * exp
   | Fun of string * exp
 ;;
 
@@ -41,5 +42,6 @@ let rec exp_to_string e =
   | FSub (e1,e2) -> "("^exp_to_string e1^"-."^exp_to_string e2^")"
   | FMul (e1,e2) -> "("^exp_to_string e1^"*."^exp_to_string e2^")"
   | FDiv (e1,e2) -> "("^exp_to_string e1^"/."^exp_to_string e2^")"
+  | Eq (e1,e2) -> "("^exp_to_string e1^"=="^exp_to_string e2^")"
   | Fun (s,e) -> "(fun "^s^"->"^exp_to_string e^")"
 ;;

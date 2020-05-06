@@ -28,6 +28,14 @@ let rec lookupE env s =
                    else lookupE env' s
 ;;
 
+let eq v1 v2 =
+  match (v1,v2) with
+  | (Int v1,Int v2) -> v1==v2
+  | (Float v1,Float v2) -> v1==v2
+  | (Bool v1,Bool v2) -> v1==v2
+  | _ -> false
+;;
+
 let rec eval env e =
   match e with
   | Exp.Int i -> Int i
@@ -49,6 +57,7 @@ let rec eval env e =
   | Exp.FSub (e1,e2) -> Float (get_f (eval env e1) -. get_f (eval env e2))
   | Exp.FMul (e1,e2) -> Float (get_f (eval env e1) *. get_f (eval env e2))
   | Exp.FDiv (e1,e2) -> Float (get_f (eval env e1) /. get_f (eval env e2))
+  | Exp.Eq (e1,e2) -> Bool (eq (eval env e1) (eval env e2))
   | Exp.Fun (s,e) -> Closure (s,env,e)
 and apply env e1 e2 =
   match eval env e1 with
