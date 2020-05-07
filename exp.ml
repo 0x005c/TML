@@ -19,6 +19,7 @@ type exp =
   | FDiv of exp * exp
   | Eq of exp * exp
   | Fun of string * exp
+  | Annot of exp * Type.typ
 ;;
 
 let rec exp_to_string e =
@@ -44,4 +45,5 @@ let rec exp_to_string e =
   | FDiv (e1,e2) -> "("^exp_to_string e1^"/."^exp_to_string e2^")"
   | Eq (e1,e2) -> "("^exp_to_string e1^"=="^exp_to_string e2^")"
   | Fun (s,e) -> "(fun "^s^"->"^exp_to_string e^")"
+  | Annot (e,t) -> "("^exp_to_string e^":"^Type.type_to_string t^")"
 ;;

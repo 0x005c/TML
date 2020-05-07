@@ -59,6 +59,7 @@ let rec eval env e =
   | Exp.FDiv (e1,e2) -> Float (get_f (eval env e1) /. get_f (eval env e2))
   | Exp.Eq (e1,e2) -> Bool (eq (eval env e1) (eval env e2))
   | Exp.Fun (s,e) -> Closure (s,env,e)
+  | Exp.Annot (e,_) -> eval env e
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e

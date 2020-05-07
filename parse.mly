@@ -5,13 +5,14 @@ open Exp
 %token <int> INT
 %token <float> FLOAT
 %token <string> IDENT
+%token TY_INT
 %token TY_BOOL
+%token TY_FLOAT
 %token TRUE
 %token FALSE
 %token NOT
 %token AND
 %token OR
-%token TY_INT
 %token IF
 %token THEN
 %token ELSE
@@ -35,6 +36,7 @@ open Exp
 %token EOF
 
 %type <Exp.exp> top atexp appexp infexp exp
+%type <Type.typ> ty
 
 %left OR
 %left AND
@@ -87,7 +89,14 @@ infexp:
 
 exp:
   | infexp { $1 }
+  | LPAREN exp COLON ty RPAREN { Annot ($2,$4) }
   | FUN IDENT ARROW exp { Fun ($2, $4) }
   | IF exp THEN exp ELSE exp { If ($2,$4,$6) }
   | LET IDENT EQUAL exp IN exp { Let ($2,$4,$6) }
+  ;
+
+ty:
+  | TY_INT { Type.Int }
+  | TY_FLOAT { Type.Float }
+  | TY_BOOL { Type.Bool }
   ;

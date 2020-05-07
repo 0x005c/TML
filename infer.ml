@@ -83,6 +83,7 @@ let rec assign_let (s,e1) e2 =
   | Exp.FDiv (e3,e4) -> Exp.FDiv (alet e3,alet e4)
   | Exp.Eq (e3,e4) -> Exp.Eq (alet e3,alet e4)
   | Exp.Apply (e3,e4) -> Exp.Apply (alet e3,alet e4)
+  | Exp.Annot (e,t) -> Exp.Annot(alet e,t)
 ;;
 
 let rec inferC env e =
@@ -136,6 +137,10 @@ let rec inferC env e =
       let x = fresh() in
       let c' = (t1,Type.Fun (t2,x))::c1@c2 in
       (x,c')
+  | Exp.Annot (e,t) ->
+      let (t',c) = inferC env e in
+      let c = (t,t')::c in
+      (t,c)
 ;;
 
 let infer e =

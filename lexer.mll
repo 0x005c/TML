@@ -11,6 +11,7 @@ rule token = parse
 | eof { EOF }
 | "int" { TY_INT }
 | "bool" { TY_BOOL }
+| "float" { TY_FLOAT }
 | "true" { TRUE }
 | "false" { FALSE }
 | "not" { NOT }
