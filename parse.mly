@@ -93,10 +93,20 @@ exp:
   | FUN IDENT ARROW exp { Fun ($2, $4) }
   | IF exp THEN exp ELSE exp { If ($2,$4,$6) }
   | LET IDENT EQUAL exp IN exp { Let ($2,$4,$6) }
+  | LET IDENT idents EQUAL exp IN exp {
+      let (s,ss,e1,e2) = ($2,$3,$5,$7) in
+      let f = List.fold_right (fun s -> fun e -> Exp.Fun (s,e)) ss e1 in
+      Exp.Let (s,f,e2)
+  }
   ;
 
 ty:
   | TY_INT { Type.Int }
   | TY_FLOAT { Type.Float }
   | TY_BOOL { Type.Bool }
+  ;
+
+idents:
+  | IDENT { [$1] }
+  | IDENT idents { $1::$2 }
   ;
