@@ -1,29 +1,28 @@
 open Value
 
-exception EvaluationError of Exp.exp ;;
-exception UnexpectedError ;;
+exception EvaluationError ;;
 
 let get_i v =
   match v with
   | Int i -> i
-  | _ -> raise UnexpectedError
+  | _ -> raise EvaluationError
 ;;
 
 let get_f v =
   match v with
   | Float f -> f
-  | _ -> raise UnexpectedError
+  | _ -> raise EvaluationError
 ;;
 
 let get_b v =
   match v with
   | Bool b -> b
-  | _ -> raise UnexpectedError
+  | _ -> raise EvaluationError
 ;;
 
 let rec lookupE env s =
   match env with
-  | [] -> raise (EvaluationError (Exp.Var s))
+  | [] -> raise EvaluationError
   | (t,v)::env' -> if String.equal s t then v
                    else lookupE env' s
 ;;
@@ -63,5 +62,5 @@ let rec eval env e =
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e
-  | _ -> raise (EvaluationError (Exp.Apply (e1,e2)))
+  | _ -> raise EvaluationError
 ;;
