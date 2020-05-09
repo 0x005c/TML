@@ -8,6 +8,7 @@ open Exp
 %token TY_INT
 %token TY_BOOL
 %token TY_FLOAT
+%token TY_UNIT
 %token TRUE
 %token FALSE
 %token NOT
@@ -71,6 +72,7 @@ atexp:
   | FALSE { Bool false }
   | IDENT { Var($1) }
   | LPAREN exp RPAREN { $2 }
+  | LPAREN RPAREN { Unit }
   ;
 
 appexp:
@@ -122,6 +124,7 @@ ty:
   | TY_INT { Type.Int }
   | TY_FLOAT { Type.Float }
   | TY_BOOL { Type.Bool }
+  | TY_UNIT { Type.Unit }
   ;
 
 idents:

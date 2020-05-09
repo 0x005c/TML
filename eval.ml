@@ -74,6 +74,7 @@ let rec eval env e =
   | Exp.Ge (e1,e2) -> Bool (not (lt (eval env e1) (eval env e2)))
   | Exp.Fun (s,e) -> Closure (s,env,e)
   | Exp.Annot (e,_) -> eval env e
+  | Exp.Unit -> Unit
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e

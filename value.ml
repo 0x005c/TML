@@ -5,6 +5,7 @@ type value =
   | Closure of string * (string * value) list * Exp.exp
   | Builtin of (value -> value)
   | LazyExp of Exp.exp
+  | Unit
 ;;
 
 let value_to_string v =
@@ -15,6 +16,7 @@ let value_to_string v =
   | LazyExp e -> "(exp"^Exp.exp_to_string e^")"
   | Closure _ -> "(closure)"
   | Builtin _ -> "(builtin)"
+  | Unit -> "()"
 ;;
 
 let runtime_error () =

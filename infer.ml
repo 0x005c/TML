@@ -76,7 +76,7 @@ let rec assign_let (s,e1) e2 =
   | Exp.Let (s',e3,e4) -> if String.equal s s' then e2 else Exp.Let (s',alet e3,alet e4)
   | Exp.LetRec (s',e3,e4) -> if String.equal s s' then e2 else Exp.LetRec (s',alet e3,alet e4)
   | Exp.Fun (s',e) -> if String.equal s s' then e2 else Exp.Fun (s',alet e)
-  | Exp.Int _ | Exp.Float _ | Exp.Bool _ -> e2
+  | Exp.Int _ | Exp.Float _ | Exp.Bool _ | Exp.Unit -> e2
   | Exp.Not e -> Exp.Not (alet e)
   | Exp.If (e3,e4,e5) -> Exp.If (alet e3,alet e4,alet e5)
   | Exp.And (e3,e4) -> Exp.And (alet e3,alet e4)
@@ -160,6 +160,7 @@ let rec inferC env e =
       let (t',c) = inferC env e in
       let c = (t,t')::c in
       (t,c)
+  | Exp.Unit -> (Unit,[])
 ;;
 
 let infer e =
