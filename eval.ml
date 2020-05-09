@@ -7,12 +7,6 @@ let runtime_error () =
   exit 1
 ;;
 
-let get_b v =
-  match v with
-  | Bool b -> b
-  | _ -> runtime_error ()
-;;
-
 let rec lookupE env s =
   match env with
   | [] -> runtime_error ()

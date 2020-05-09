@@ -35,3 +35,9 @@ let get_f v =
   | Float f -> f
   | _ -> runtime_error ()
 ;;
+
+let get_b v =
+  match v with
+  | Bool b -> b
+  | _ -> runtime_error ()
+;;
