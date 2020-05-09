@@ -18,11 +18,11 @@ let rec show_assign a =
 let _ =
   let exp = Parse.top Lexer.token (Lexing.from_channel stdin) in
   let es = Exp.exp_to_string exp in
-  printf "exp: %s\n" es;
+  eprintf "exp: %s\n" es;
   let t = Infer.infer exp in
   let ts = Type.type_to_string t in
-  printf "type: %s\n" ts;
+  eprintf "type: %s\n" ts;
   let v = Eval.eval [] exp in
   let vs = Value.value_to_string v in
-  printf "value: %s\n" vs
+  eprintf "value: %s\n" vs
 ;;
