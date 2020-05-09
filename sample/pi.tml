@@ -1,0 +1,6 @@
+let f n = 2*n * (2*n+1) * (2*n+2) in
+let rec pi n =
+  if n==0 then 3.0
+  else (4.0 /. i2f (f (2*n-1))) -. (4.0 /. i2f (f (2*n))) +. pi(n-1)
+in
+pi 100
