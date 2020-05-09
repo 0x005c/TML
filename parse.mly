@@ -30,6 +30,11 @@ open Exp
 %token SLASHDOT
 %token EQUAL
 %token EQEQ
+%token LTGT
+%token LT
+%token GT
+%token LE
+%token GE
 %token ARROW
 %token COLON
 %token LPAREN
@@ -42,7 +47,7 @@ open Exp
 %left OR
 %left AND
 
-%left EQEQ
+%left EQEQ LTGT LT GT LE GE
 
 %left PLUS MINUS
 %left STAR SLASH
@@ -84,6 +89,11 @@ infexp:
   | infexp STARDOT infexp { FMul($1, $3) }
   | infexp SLASHDOT infexp { FDiv($1, $3) }
   | infexp EQEQ infexp { Eq($1,$3) }
+  | infexp LTGT infexp { Ne($1,$3) }
+  | infexp LT infexp { Lt($1,$3) }
+  | infexp GT infexp { Gt($1,$3) }
+  | infexp LE infexp { Le($1,$3) }
+  | infexp GE infexp { Ge($1,$3) }
   | infexp OR infexp { Or($1,$3) }
   | infexp AND infexp { And($1,$3) }
   ;

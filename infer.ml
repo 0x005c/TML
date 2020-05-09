@@ -90,6 +90,11 @@ let rec assign_let (s,e1) e2 =
   | Exp.FMul (e3,e4) -> Exp.FMul (alet e3,alet e4)
   | Exp.FDiv (e3,e4) -> Exp.FDiv (alet e3,alet e4)
   | Exp.Eq (e3,e4) -> Exp.Eq (alet e3,alet e4)
+  | Exp.Ne (e3,e4) -> Exp.Ne (alet e3,alet e4)
+  | Exp.Lt (e3,e4) -> Exp.Lt (alet e3,alet e4)
+  | Exp.Gt (e3,e4) -> Exp.Gt (alet e3,alet e4)
+  | Exp.Le (e3,e4) -> Exp.Le (alet e3,alet e4)
+  | Exp.Ge (e3,e4) -> Exp.Ge (alet e3,alet e4)
   | Exp.Apply (e3,e4) -> Exp.Apply (alet e3,alet e4)
   | Exp.Annot (e,t) -> Exp.Annot(alet e,t)
 ;;
@@ -133,7 +138,8 @@ let rec inferC env e =
       let c1 = (t1,Type.Float)::c1 in
       let c2 = (t2,Type.Float)::c2 in
       (Type.Float,c1@c2)
-  | Exp.Eq (e1,e2) ->
+  | Exp.Eq (e1,e2) | Exp.Ne (e1,e2) | Exp.Lt (e1,e2) | Exp.Gt (e1,e2)
+  | Exp.Le (e1,e2) | Exp.Ge (e1,e2) ->
       let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c = (t1,t2)::(c1@c2)  in
       (Type.Bool,c)

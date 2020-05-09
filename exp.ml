@@ -19,6 +19,11 @@ type exp =
   | FMul of exp * exp
   | FDiv of exp * exp
   | Eq of exp * exp
+  | Ne of exp * exp
+  | Lt of exp * exp
+  | Gt of exp * exp
+  | Le of exp * exp
+  | Ge of exp * exp
   | Fun of string * exp
   | Annot of exp * Type.typ
 ;;
@@ -46,6 +51,11 @@ let rec exp_to_string e =
   | FMul (e1,e2) -> "("^exp_to_string e1^"*."^exp_to_string e2^")"
   | FDiv (e1,e2) -> "("^exp_to_string e1^"/."^exp_to_string e2^")"
   | Eq (e1,e2) -> "("^exp_to_string e1^"=="^exp_to_string e2^")"
+  | Ne (e1,e2) -> "("^exp_to_string e1^"<>"^exp_to_string e2^")"
+  | Lt (e1,e2) -> "("^exp_to_string e1^"<"^exp_to_string e2^")"
+  | Gt (e1,e2) -> "("^exp_to_string e1^">"^exp_to_string e2^")"
+  | Le (e1,e2) -> "("^exp_to_string e1^"<="^exp_to_string e2^")"
+  | Ge (e1,e2) -> "("^exp_to_string e1^">="^exp_to_string e2^")"
   | Fun (s,e) -> "(fun "^s^"->"^exp_to_string e^")"
   | Annot (e,t) -> "("^exp_to_string e^":"^Type.type_to_string t^")"
 ;;

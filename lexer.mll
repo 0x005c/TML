@@ -34,6 +34,11 @@ rule token = parse
 | "/." { SLASHDOT }
 | "=" { EQUAL }
 | "==" { EQEQ }
+| "<" { LT }
+| ">" { GT }
+| "<=" { LE }
+| ">=" { GE }
+| "<>" { LTGT }
 | "->" { ARROW }
 | ":" { COLON }
 | "(" { LPAREN }
