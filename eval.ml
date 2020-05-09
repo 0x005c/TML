@@ -40,12 +40,13 @@ let rec eval env e =
   | Exp.Int i -> Int i
   | Exp.Float f -> Float f
   | Exp.Bool b -> Bool b
-  | Exp.Var s -> lookupE env s
+  | Exp.Var s -> unlazy env (lookupE env s)
   | Exp.Apply (e1,e2) -> apply env e1 e2
   | Exp.Not e -> Bool (not (get_b (eval env e)))
   | Exp.If (e1,e2,e3) -> if (get_b (eval env e1)) then eval env e2
                                                   else eval env e3
   | Exp.Let (s,e1,e2) -> eval ((s,eval env e1)::env) e2
+  | Exp.LetRec (s,e1,e2) -> eval ((s,LazyExp e1)::env) e2
   | Exp.And (e1,e2) -> Bool (get_b (eval env e1) && get_b (eval env e2))
   | Exp.Or (e1,e2) -> Bool (get_b (eval env e1) || get_b (eval env e2))
   | Exp.IAdd (e1,e2) -> Int (get_i (eval env e1) + get_i (eval env e2))
@@ -63,4 +64,8 @@ and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e
   | _ -> raise EvaluationError
+and unlazy env v =
+  match v with
+  | LazyExp e -> eval env e
+  | _ -> v
 ;;

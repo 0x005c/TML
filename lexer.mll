@@ -23,6 +23,7 @@ rule token = parse
 | "fun" { FUN }
 | "let" { LET }
 | "in" { IN }
+| "rec" { REC }
 | "+" { PLUS }
 | "-" { MINUS }
 | "*" { STAR }

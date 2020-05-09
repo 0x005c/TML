@@ -67,6 +67,7 @@ let rec assign_let (s,e1) e2 =
   match e2 with
   | Exp.Var s' -> if String.equal s s' then e1 else e2
   | Exp.Let (s',e3,e4) -> if String.equal s s' then e2 else Exp.Let (s',alet e3,alet e4)
+  | Exp.LetRec (s',e3,e4) -> if String.equal s s' then e2 else Exp.LetRec (s',alet e3,alet e4)
   | Exp.Fun (s',e) -> if String.equal s s' then e2 else Exp.Fun (s',alet e)
   | Exp.Int _ | Exp.Float _ | Exp.Bool _ -> e2
   | Exp.Not e -> Exp.Not (alet e)
@@ -105,6 +106,11 @@ let rec inferC env e =
       let e2 = assign_let (s,e1) e2 in
       let _ = inferC env e1 in
       inferC env e2
+  | Exp.LetRec (s,e1,e2) ->
+      let t1 = fresh() in
+      let (_,c') = inferC ((s,t1)::env) e1 in
+      let t1 = assign (unify c') t1 in
+      inferC ((s,t1)::env) e2
   | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
       let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c1 = (t1,Type.Bool)::c1 in

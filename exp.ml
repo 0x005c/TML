@@ -5,6 +5,7 @@ type exp =
   | Var of string
   | If of exp * exp * exp
   | Let of string * exp * exp
+  | LetRec of string * exp * exp
   | Apply of exp * exp
   | Not of exp
   | And of exp * exp
@@ -30,6 +31,7 @@ let rec exp_to_string e =
   | If (e1,e2,e3) -> "(if "^exp_to_string e1^" then "
       ^exp_to_string e2^" else "^exp_to_string e3^")"
   | Let (s,e1,e2) -> "(let "^s^"="^exp_to_string e1^" in "^exp_to_string e2^")"
+  | LetRec (s,e1,e2) -> "(let rec "^s^"="^exp_to_string e1^" in "^exp_to_string e2^")"
   | Var s -> s
   | Apply (e1,e2) -> "("^exp_to_string e1^" "^exp_to_string e2^")"
   | Not e -> "(not "^exp_to_string e^")"

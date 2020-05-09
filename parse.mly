@@ -19,6 +19,7 @@ open Exp
 %token FUN
 %token LET
 %token IN
+%token REC
 %token PLUS
 %token MINUS
 %token STAR
@@ -95,8 +96,15 @@ exp:
   | LET IDENT EQUAL exp IN exp { Let ($2,$4,$6) }
   | LET IDENT idents EQUAL exp IN exp {
       let (s,ss,e1,e2) = ($2,$3,$5,$7) in
+      (* let f f = ... みたいな式も通ってしまう *)
       let f = List.fold_right (fun s -> fun e -> Exp.Fun (s,e)) ss e1 in
       Exp.Let (s,f,e2)
+  }
+  | LET REC IDENT EQUAL exp IN exp { LetRec ($3,$5,$7) }
+  | LET REC IDENT idents EQUAL exp IN exp {
+      let (s,ss,e1,e2) = ($3,$4,$6,$8) in
+      let f = List.fold_right (fun s -> fun e -> Exp.Fun (s,e)) ss e1 in
+      Exp.LetRec (s,f,e2)
   }
   ;
 
