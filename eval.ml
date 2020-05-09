@@ -7,18 +7,6 @@ let runtime_error () =
   exit 1
 ;;
 
-let get_i v =
-  match v with
-  | Int i -> i
-  | _ -> runtime_error ()
-;;
-
-let get_f v =
-  match v with
-  | Float f -> f
-  | _ -> runtime_error ()
-;;
-
 let get_b v =
   match v with
   | Bool b -> b
@@ -68,9 +56,12 @@ let rec eval env e =
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e
+  | Builtin f -> f (eval env e2)
   | _ -> runtime_error ()
 and unlazy env v =
   match v with
   | LazyExp e -> eval env e
   | _ -> v
 ;;
+
+let evaluate e = eval Builtin.builtin_venv e ;;

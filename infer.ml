@@ -157,6 +157,6 @@ let rec inferC env e =
 ;;
 
 let infer e =
-  let (t,c) = inferC [] e in
+  let (t,c) = inferC Builtin.builtin_tenv e in
   assign (unify c) t
 ;;

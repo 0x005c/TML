@@ -22,7 +22,7 @@ let _ =
   let t = Infer.infer exp in
   let ts = Type.type_to_string t in
   eprintf "type: %s\n" ts;
-  let v = Eval.eval [] exp in
+  let v = Eval.evaluate exp in
   let vs = Value.value_to_string v in
   eprintf "value: %s\n" vs
 ;;

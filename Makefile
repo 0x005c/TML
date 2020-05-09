@@ -1,7 +1,8 @@
 all:
 	ocamllex lexer.mll
 	menhir parse.mly
-	ocamlc -o toyml type.ml exp.ml infer.ml parse.mli parse.ml lexer.ml value.ml eval.ml main.ml
+	ocamlc -o toyml type.ml exp.ml value.ml builtin.ml infer.ml \
+		parse.mli parse.ml lexer.ml eval.ml main.ml
 
 .PHONY: clean
 
