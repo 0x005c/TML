@@ -5,9 +5,16 @@ type assign =
   | Compose of assign * assign
 ;;
 
-exception UnificationError of Type.typ * Type.typ ;;
-exception InferenceError of Exp.exp ;;
-exception UnknownVariableError of string ;;
+let unification_error (s,t) =
+  Printf.eprintf "couldn't match type \"%s\" with \"%s\""
+      (Type.type_to_string s) (Type.type_to_string t);
+  exit 1
+;;
+
+let unknown_variable_error s =
+  Printf.eprintf "unknown variable \"%s\"" s;
+  exit 1
+;;
 
 let x = ref 0 ;;
 
@@ -40,12 +47,12 @@ let rec unify c =
       | (Type.Var _,_) -> Compose ((unify(assignC (Set [(s,t)]) c')),Set [(s,t)])
       | (_,Type.Var _) -> Compose ((unify(assignC (Set [(t,s)]) c')),Set [(t,s)])
       | (Type.Fun (s1,s2),Type.Fun (t1,t2)) -> unify((s1,t1)::(s2,t2)::c')
-      | (_,_) -> raise (UnificationError (s,t))
+      | (_,_) -> unification_error (s,t)
 ;;
 
 let rec lookup env s =
   match env with
-  | [] -> raise (UnknownVariableError s)
+  | [] -> unknown_variable_error s
   | (s',t)::env -> if String.equal s s' then t
                    else lookup env s
 ;;

@@ -2,27 +2,32 @@ open Value
 
 exception EvaluationError ;;
 
+let runtime_error () =
+  Printf.eprintf "Evaluation failed";
+  exit 1
+;;
+
 let get_i v =
   match v with
   | Int i -> i
-  | _ -> raise EvaluationError
+  | _ -> runtime_error ()
 ;;
 
 let get_f v =
   match v with
   | Float f -> f
-  | _ -> raise EvaluationError
+  | _ -> runtime_error ()
 ;;
 
 let get_b v =
   match v with
   | Bool b -> b
-  | _ -> raise EvaluationError
+  | _ -> runtime_error ()
 ;;
 
 let rec lookupE env s =
   match env with
-  | [] -> raise EvaluationError
+  | [] -> runtime_error ()
   | (t,v)::env' -> if String.equal s t then v
                    else lookupE env' s
 ;;
@@ -63,7 +68,7 @@ let rec eval env e =
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e
-  | _ -> raise EvaluationError
+  | _ -> runtime_error ()
 and unlazy env v =
   match v with
   | LazyExp e -> eval env e
