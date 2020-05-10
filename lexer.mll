@@ -13,6 +13,7 @@ rule token = parse
 | "int" { TY_INT }
 | "bool" { TY_BOOL }
 | "float" { TY_FLOAT }
+| "string" { TY_STRING }
 | "unit" { TY_UNIT }
 | "true" { TRUE }
 | "false" { FALSE }

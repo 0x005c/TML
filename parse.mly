@@ -127,6 +127,7 @@ ty:
   | TY_INT { Type.Int }
   | TY_FLOAT { Type.Float }
   | TY_BOOL { Type.Bool }
+  | TY_STRING { Type.String }
   | TY_UNIT { Type.Unit }
   ;
 
