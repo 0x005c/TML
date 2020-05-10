@@ -43,6 +43,7 @@ let rec eval env e =
   | Exp.Int i -> Int i
   | Exp.Float f -> Float f
   | Exp.Bool b -> Bool b
+  | Exp.String s -> String s
   | Exp.Var s -> unlazy env (lookupE env s)
   | Exp.Apply (e1,e2) -> apply env e1 e2
   | Exp.Not e -> Bool (not (get_b (eval env e)))

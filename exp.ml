@@ -2,6 +2,7 @@ type exp =
   | Int of int
   | Float of float
   | Bool of bool
+  | String of string
   | Var of string
   | If of exp * exp * exp
   | Let of string * exp * exp
@@ -34,6 +35,7 @@ let rec exp_to_string e =
   | Int i -> string_of_int i
   | Float f -> string_of_float f
   | Bool b -> string_of_bool b
+  | String s -> "\""^s^"\""
   | If (e1,e2,e3) -> "(if "^exp_to_string e1^" then "
       ^exp_to_string e2^" else "^exp_to_string e3^")"
   | Let (s,e1,e2) -> "(let "^s^"="^exp_to_string e1^" in "^exp_to_string e2^")"

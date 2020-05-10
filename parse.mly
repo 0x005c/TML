@@ -4,10 +4,12 @@ open Exp
 
 %token <int> INT
 %token <float> FLOAT
+%token <string> STRING
 %token <string> IDENT
 %token TY_INT
 %token TY_BOOL
 %token TY_FLOAT
+%token TY_STRING
 %token TY_UNIT
 %token TRUE
 %token FALSE
@@ -70,6 +72,7 @@ atexp:
   | FLOAT { Float($1) }
   | TRUE { Bool true }
   | FALSE { Bool false }
+  | STRING { String(String.sub $1 1 ((String.length $1)-2)) }
   | IDENT { Var($1) }
   | LPAREN exp RPAREN { $2 }
   | LPAREN RPAREN { Unit }

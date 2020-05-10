@@ -5,6 +5,7 @@ open Parse
 let space = [' ' '\t' '\n' '\r']
 let identc = ['a'-'z' 'A'-'Z' '_']
 let digit = ['0'-'9']
+let stringtext = [^'"']
 
 rule token = parse
 | space+ { token lexbuf }
@@ -44,6 +45,7 @@ rule token = parse
 | ":" { COLON }
 | "(" { LPAREN }
 | ")" { RPAREN }
+| "\""stringtext+"\"" { STRING(Lexing.lexeme lexbuf) }
 | digit+"."digit+ { FLOAT(float_of_string(Lexing.lexeme lexbuf)) }
 | digit+ { INT(int_of_string(Lexing.lexeme lexbuf)) }
 | identc(identc|digit)* { IDENT(Lexing.lexeme lexbuf) }

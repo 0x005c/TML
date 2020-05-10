@@ -2,6 +2,7 @@ type value =
   | Int of int
   | Float of float
   | Bool of bool
+  | String of string
   | Closure of string * (string * value) list * Exp.exp
   | Builtin of (value -> value)
   | LazyExp of Exp.exp
@@ -13,6 +14,7 @@ let value_to_string v =
   | Int i -> string_of_int i
   | Float f -> string_of_float f
   | Bool b -> string_of_bool b
+  | String s -> "\""^s^"\""
   | LazyExp e -> "(exp"^Exp.exp_to_string e^")"
   | Closure _ -> "(closure)"
   | Builtin _ -> "(builtin)"
@@ -39,5 +41,11 @@ let get_f v =
 let get_b v =
   match v with
   | Bool b -> b
+  | _ -> runtime_error ()
+;;
+
+let get_s v =
+  match v with
+  | String s -> s
   | _ -> runtime_error ()
 ;;
