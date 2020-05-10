@@ -19,6 +19,7 @@ let eq v1 v2 =
   | (Int v1,Int v2) -> v1==v2
   | (Float v1,Float v2) -> v1==v2
   | (Bool v1,Bool v2) -> v1==v2
+  | (String s1,String s2) -> String.equal s1 s2
   | _ -> false
 ;;
 
