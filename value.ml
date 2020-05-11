@@ -7,9 +7,10 @@ type value =
   | Builtin of (value -> value)
   | LazyExp of Exp.exp
   | Unit
+  | Tuple of value list
 ;;
 
-let value_to_string v =
+let rec value_to_string v =
   match v with
   | Int i -> string_of_int i
   | Float f -> string_of_float f
@@ -19,6 +20,10 @@ let value_to_string v =
   | Closure _ -> "(closure)"
   | Builtin _ -> "(builtin)"
   | Unit -> "()"
+  | Tuple (x::xs) -> List.fold_left
+      (fun s -> fun x -> s^","^value_to_string x)
+      ("("^value_to_string x) xs ^ ")"
+  | Tuple [] -> Printf.eprintf "broken tuple\n" ; exit 1
 ;;
 
 let runtime_error () =

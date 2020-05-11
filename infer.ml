@@ -27,6 +27,7 @@ let fresh =
 let rec assign s t =
   match t with
   | Type.Fun (t1,t2) -> Type.Fun (assign s t1,assign s t2)
+  | Type.Tuple xs -> Type.Tuple (map (assign s) xs)
   | _ ->
   match s with
   | Set [] -> t
@@ -97,6 +98,7 @@ let rec assign_let (s,e1) e2 =
   | Exp.Ge (e3,e4) -> Exp.Ge (alet e3,alet e4)
   | Exp.Apply (e3,e4) -> Exp.Apply (alet e3,alet e4)
   | Exp.Annot (e,t) -> Exp.Annot(alet e,t)
+  | Exp.Tuple xs -> Exp.Tuple (map alet xs)
 ;;
 
 let rec inferC env e =
@@ -162,6 +164,10 @@ let rec inferC env e =
       let c = (t,t')::c in
       (t,c)
   | Exp.Unit -> (Unit,[])
+  | Exp.Tuple xs ->
+      let tcs = map (fun e -> inferC env e) xs in
+      let ts = map (fun (t,c) -> assign (unify c) t) tcs in
+      (Type.Tuple ts,[])
 ;;
 
 let infer e =

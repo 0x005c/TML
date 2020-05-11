@@ -71,6 +71,7 @@ let rec eval env e =
   | Exp.Fun (s,e) -> Closure (s,env,e)
   | Exp.Annot (e,_) -> eval env e
   | Exp.Unit -> Unit
+  | Exp.Tuple xs -> Tuple (List.map (fun e -> eval env e) xs)
 and apply env e1 e2 =
   match eval env e1 with
   | Closure (s,cenv,e) -> eval ((s,eval env e2)::cenv) e

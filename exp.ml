@@ -28,6 +28,7 @@ type exp =
   | Fun of string * exp
   | Annot of exp * Type.typ
   | Unit
+  | Tuple of exp list
 ;;
 
 let rec exp_to_string e =
@@ -62,4 +63,8 @@ let rec exp_to_string e =
   | Fun (s,e) -> "(fun "^s^"->"^exp_to_string e^")"
   | Annot (e,t) -> "("^exp_to_string e^":"^Type.type_to_string t^")"
   | Unit -> "()"
+  | Tuple (x::xs) -> List.fold_left
+      (fun s -> fun x -> s^","^exp_to_string x)
+      ("("^exp_to_string x) xs ^ ")"
+  | Tuple [] -> Printf.eprintf "broken tuple\n" ; exit 1
 ;;

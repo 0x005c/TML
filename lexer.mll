@@ -44,6 +44,7 @@ rule token = parse
 | "<>" { LTGT }
 | "->" { ARROW }
 | ":" { COLON }
+| "," { COMMA }
 | "(" { LPAREN }
 | ")" { RPAREN }
 | "\""stringtext+"\"" { STRING(Lexing.lexeme lexbuf) }

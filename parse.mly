@@ -40,6 +40,7 @@ open Exp
 %token GE
 %token ARROW
 %token COLON
+%token COMMA
 %token LPAREN
 %token RPAREN
 %token EOF
@@ -75,6 +76,7 @@ atexp:
   | STRING { String(String.sub $1 1 ((String.length $1)-2)) }
   | IDENT { Var($1) }
   | LPAREN exp RPAREN { $2 }
+  | LPAREN exp exps RPAREN { Tuple ($2::$3) }
   | LPAREN RPAREN { Unit }
   ;
 
@@ -121,6 +123,11 @@ exp:
       let f = List.fold_right (fun s -> fun e -> Exp.Fun (s,e)) ss e1 in
       Exp.LetRec (s,f,e2)
   }
+  ;
+
+exps:
+  | COMMA exp { [$2] }
+  | COMMA exp exps { $2::$3 }
   ;
 
 ty:
