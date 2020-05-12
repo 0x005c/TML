@@ -166,8 +166,9 @@ let rec inferC env e =
   | Exp.Unit -> (Unit,[])
   | Exp.Tuple xs ->
       let tcs = map (fun e -> inferC env e) xs in
-      let ts = map (fun (t,c) -> assign (unify c) t) tcs in
-      (Type.Tuple ts,[])
+      let c = fold_left (fun x (_,y) -> x@y) [] tcs in
+      let ts = map (fun (t,_) -> assign (unify c) t) tcs in
+      (Type.Tuple ts,c)
 ;;
 
 let infer e =
