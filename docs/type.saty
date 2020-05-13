@@ -1,0 +1,35 @@
+@require: stdjareport
+@import: type
+
+document (|
+  title = {};
+  author = {};
+|) '<
+  +chapter{型システム}<
+    +section{型付け規則}<
+      +subsection{一覧}<
+        +math-list[
+          ${\t-const};
+          ${\t-var};
+          ${\t-not};
+          ${\t-tuple};
+          ${\t-app};
+          ${\t-op};
+          ${\t-cmp};
+          ${\t-annot};
+          ${\t-fun};
+          ${\t-if};
+          ${\t-let};
+          ${\t-letrec};
+        ];
+      >
+      +subsection{各演算子の定義}<
+        +p{${\tyvars{\tau}}は${\tau}に現れる全ての型変数からなる集合であり、
+           ${\tyvars{\Gamma}}は${\Gamma}に現れる全ての型変数からなる集合}
+        +p{${\clos{\Gamma}{\tau}=
+           \forall\alpha.\tau}
+        (ただし${\alpha=\tyvars{\tau}\setminus\tyvars{\Gamma}})}
+      >
+    >
+  >
+>

@@ -1,0 +1,121 @@
+@require: proof
+@require: math
+@require: pervasives
+
+% 参考文献
+% https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/isle4-06w/text/miniml011.html
+% TaPL
+% SMLの定義
+% MinCamlの定義
+
+let-math \tj mG mt mT mC = ${#mG \vdash #mt : #mT \| #mC}
+let-math \ra = ${\rightarrow}
+let-math \text-nobreak it =
+  text-in-math MathOrd (fun ctx -> no-break(read-inline ctx it))
+let-math \new-tyvar x =
+  ${\text-nobreak!{${#x}は新しい型変数}}
+
+let-math \tyvars x = ${\text!{tyvars}\(#x\)}
+let-math \clos a ty = ${\text!{clos}_#a\(#ty\)}
+
+% atomic expressions
+let-math \t-const =
+  ${\derive?:{\text!{(T-Const)}}
+             {|\text!{${c}は${\tau}型の定数}|}
+             {\tj{}{c}{\tau}{\emptyset}}}
+
+let-math \t-var =
+  ${\derive?:{\text!{(T-Var)}}{|x:\tau\in\Gamma|}
+     {\tj{\Gamma}{x}{\tau}{\emptyset}}}
+
+let-math \t-tuple =
+  ${\derive?:{\text!{(T-Tuple)}}
+      {| \tj{\Gamma}{t_1}{\tau_1}{C_1}
+       | \tj{\Gamma}{t_2}{\tau_2}{C_2}
+       | \cdots
+       | \tj{\Gamma}{t_n}{\tau_n}{C_n}
+       |}
+      {\tj{\Gamma}{\(t_1,t_2,\cdots,t_n\)}
+          {\tau_1\times\tau_2\times\cdots\times\tau_n}
+          {C_1\cup C_2 \cup \cdots \cup C_n}}}
+
+let-math \t-not =
+  ${\derive?:{\text!{(T-Not)}}
+    {|\tj{\Gamma}{t}{bool}{C}|}
+    {\tj{\Gamma}{\text!{not\ }t}{bool}{C}}}
+
+% application expressions
+let-math \t-app =
+  let-math \cup-ctx =
+    ${\text-nobreak!{${C'=C_1\cup C_2\cup \{\tau_1=\tau_2\rightarrow X\}}}}
+  in
+  ${\derive-multi?:{\text!{(T-App)}}!(7cm){
+    | \new-tyvar{X}
+    | \tj{\Gamma}{t_1}{\tau_1}{C_1}
+    | \tj{\Gamma}{t_2}{\tau_2}{C_2}
+    | \cup-ctx
+    |}
+    {\tj{\Gamma}{t_1\ t_2}{X}{C'}}}
+
+% infix expressions
+let-math \t-op =
+  ${\derive-multi?:{\text!{(T-Op)}}!(8cm){
+    | \text-nobreak!{${\oplus}は${\tau}型の値をとって${\tau}型の値を返す二項演算子}
+    | \tj{\Gamma}{t_1}{\tau_1}{C_1}
+    | \tj{\Gamma}{t_2}{\tau_2}{C_2}
+    | C'=C_1\cup C_2\cup \{\tau_1=\tau, \tau_2=\tau\}
+    |}
+    {\tj{\Gamma}{t_1\oplus t_2}{\tau}{C'}}}
+
+let-math \t-cmp =
+  ${\derive-multi?:{\text!{(T-Cmp)}}!(7cm){
+    | \text-nobreak!{${\oplus}は比較演算子}
+    | \tj{\Gamma}{t_1}{\tau_1}{C_1}
+    | \tj{\Gamma}{t_2}{\tau_2}{C_2}
+    | C'=C_1\cup C_2\cup \{\tau_1=\tau_2\}
+    |}
+    {\tj{\Gamma}{t_1\oplus t_2}{bool}{C'}}}
+
+% expressions
+let-math \t-annot =
+  ${\derive-multi?:{\text!{(T-Annot)}}!(7cm){
+    | \text-nobreak!{${ty}は${\tau}を表す式}
+    | \tj{\Gamma}{t}{\tau'}{C}
+    | C'=C\cup\{\tau=\tau'\}
+    |}
+    {\tj{\Gamma}{\(t:ty\)}{\tau}{C'}}}
+
+let-math \t-fun =
+  ${\derive-multi?:{\text!{(T-Fun)}}!(5cm){
+    | \new-tyvar{X}
+    | \tj{\Gamma,x:X}{t}{\tau}{C}
+    |}
+    {\tj{\Gamma}{\text!{fun}\ x\rightarrow t}{X\rightarrow\tau}{C}}}
+
+let-math \t-if =
+  ${\derive-multi?:{\text!{(T-If)}}!(8cm){
+    | \tj{\Gamma}{t_1}{\tau_1}{C_1}
+    | \tj{\Gamma}{t_2}{\tau_2}{C_2}
+    | \tj{\Gamma}{t_3}{\tau_3}{C_3}
+    | C'=C_1\cup C_2\cup C_3\cup \{\tau_1=bool,\tau_2=\tau_3\}
+    |}
+    {\tj{\Gamma}{\text!{if\ ${t_1}\ then\ ${t_2}\ else\ ${t_3}}}{\tau_2}{C'}}}
+
+let-math \t-let =
+  ${\derive-multi?:{\text!{(T-Let)}}!(8cm){
+    | \tj{\Gamma}{t_1}{\tau_1}{C_1}
+    | \sigma = \text!{unify}\(C_1\)
+    | \alpha = \text!{clos}_\Gamma\(\sigma\tau_1\)
+    | \tj{\Gamma,x=\alpha}{t_2}{\tau_2}{C_2}
+    |}
+    {\tj{\Gamma}{\text!{let\ ${x}\ =\ ${t_1}\ in\ ${t_2}}}{\tau_2}{C}}}
+
+let-math \t-letrec =
+  ${\derive-multi?:{\text!{(T-LetRec)}}!(9cm){
+    | \new-tyvar{X}
+    | \tj{\Gamma,x:X}{t_1}{\tau_1}{C_1}
+    | \sigma = \text!{unify}\(C_1\)
+    | \alpha = \text!{clos}_{\Gamma,x:X}\(\sigma\tau_1\)
+    | \tj{\Gamma,x=\alpha}{t_2}{\tau_2}{C_2}
+    |}
+    {\tj{\Gamma}{\text!{let\ rec\ ${x}\ =\ ${t_1}\ in\ ${t_2}}}{\tau_2}{C'}}}
