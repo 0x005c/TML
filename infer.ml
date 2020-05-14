@@ -150,7 +150,6 @@ let rec inferC env e =
       let t1 = fresh() in
       let env = (s,t1)::env in
       let (t2,c) = inferC env e in
-      let t1 = assign (unify c) t1 in
       (Type.Fun (t1,t2),c)
   | Exp.Var s ->
       (lookup env s,[])
