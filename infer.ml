@@ -123,9 +123,9 @@ let rec inferC env e =
       inferC env e2
   | Exp.LetRec (s,e1,e2) ->
       let x = fresh() in
-      let (t1,c) = inferC ((s,x)::env) e1 in
-      let t1 = assign (unify ((x,t1)::c)) t1 in
-      inferC ((s,t1)::env) e2
+      let (t1,c1) = inferC ((s,x)::env) e1 in
+      let (t2,c2) = inferC ((s,x)::env) e2 in
+      (t2,(x,t1)::c1@c2)
   | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
       let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
       let c1 = (t1,Type.Bool)::c1 in
