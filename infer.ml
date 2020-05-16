@@ -16,6 +16,11 @@ let unknown_variable_error s =
   exit 1
 ;;
 
+let occurence_error x t =
+  Printf.eprintf "%s occurs in %s\n" (Type.type_to_string x) (Type.type_to_string t);
+  exit 1
+;;
+
 let x = ref 0 ;;
 
 let fresh =
@@ -38,6 +43,22 @@ let rec assign s t =
 
 let assignC s c = List.map (fun (t,u) -> (assign s t,assign s u)) c ;;
 
+let rec occur x t =
+  let i =
+    match x with
+    | Type.Var i -> i
+    | _ -> Printf.eprintf "the first argument of occur should be type variable";
+           exit 1
+  in
+  let f _ y = occur x y in
+  match t with
+  | Type.Var j -> if i==j then occurence_error x t
+             else ()
+  | Type.Int | Type.Float | Type.Bool | Type.String | Type.Unit -> ()
+  | Type.Fun (t1,t2) -> occur x t1; occur x t2
+  | Type.Tuple ts -> List.fold_left f () ts
+;;
+
 let rec unify c =
   match c with
   | [] -> Set []
@@ -45,8 +66,12 @@ let rec unify c =
       if s==t then unify c'
       else match (s,t) with
       (* 出現検査をしていない *)
-      | (Type.Var _,_) -> Compose ((unify(assignC (Set [(s,t)]) c')),Set [(s,t)])
-      | (_,Type.Var _) -> Compose ((unify(assignC (Set [(t,s)]) c')),Set [(t,s)])
+      | (Type.Var _,_) ->
+          occur s t;
+          Compose ((unify(assignC (Set [(s,t)]) c')),Set [(s,t)])
+      | (_,Type.Var _) ->
+          occur t s;
+          Compose ((unify(assignC (Set [(t,s)]) c')),Set [(t,s)])
       | (Type.Fun (s1,s2),Type.Fun (t1,t2)) -> unify((s1,t1)::(s2,t2)::c')
       | (_,_) -> unification_error (s,t)
 ;;
