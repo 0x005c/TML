@@ -9,6 +9,7 @@ let stringtext = [^'"']
 
 rule token = parse
 | space+ { token lexbuf }
+| "(*" { comment 1 lexbuf }
 | eof { EOF }
 | "int" { TY_INT }
 | "bool" { TY_BOOL }
@@ -51,3 +52,7 @@ rule token = parse
 | digit+"."digit+ { FLOAT(float_of_string(Lexing.lexeme lexbuf)) }
 | digit+ { INT(int_of_string(Lexing.lexeme lexbuf)) }
 | identc(identc|digit)* { IDENT(Lexing.lexeme lexbuf) }
+and comment n = parse
+| "*)" { if n>1 then comment (n-1) lexbuf else token lexbuf }
+| "(*" { comment (n+1) lexbuf }
+| _ { comment n lexbuf }
