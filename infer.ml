@@ -95,101 +95,71 @@ let addE env (s,e) =
   (tenv,eenv)
 ;;
 
-let rec assign_let (s,e1) e2 =
-  let alet = assign_let (s,e1) in
-  match e2 with
-  | Exp.Var s' -> if String.equal s s' then e1 else e2
-  | Exp.Let (s',e3,e4) -> if String.equal s s' then e2 else Exp.Let (s',alet e3,alet e4)
-  | Exp.LetRec (s',e3,e4) -> if String.equal s s' then e2 else Exp.LetRec (s',alet e3,alet e4)
-  | Exp.Fun (s',e) -> if String.equal s s' then e2 else Exp.Fun (s',alet e)
-  | Exp.Int _ | Exp.Float _ | Exp.Bool _ | Exp.String _ | Exp.Unit -> e2
-  | Exp.Not e -> Exp.Not (alet e)
-  | Exp.If (e3,e4,e5) -> Exp.If (alet e3,alet e4,alet e5)
-  | Exp.And (e3,e4) -> Exp.And (alet e3,alet e4)
-  | Exp.Or (e3,e4) -> Exp.Or (alet e3,alet e4)
-  | Exp.IAdd (e3,e4) -> Exp.IAdd (alet e3,alet e4)
-  | Exp.ISub (e3,e4) -> Exp.ISub (alet e3,alet e4)
-  | Exp.IMul (e3,e4) -> Exp.IMul (alet e3,alet e4)
-  | Exp.IDiv (e3,e4) -> Exp.IDiv (alet e3,alet e4)
-  | Exp.FAdd (e3,e4) -> Exp.FAdd (alet e3,alet e4)
-  | Exp.FSub (e3,e4) -> Exp.FSub (alet e3,alet e4)
-  | Exp.FMul (e3,e4) -> Exp.FMul (alet e3,alet e4)
-  | Exp.FDiv (e3,e4) -> Exp.FDiv (alet e3,alet e4)
-  | Exp.Eq (e3,e4) -> Exp.Eq (alet e3,alet e4)
-  | Exp.Ne (e3,e4) -> Exp.Ne (alet e3,alet e4)
-  | Exp.Lt (e3,e4) -> Exp.Lt (alet e3,alet e4)
-  | Exp.Gt (e3,e4) -> Exp.Gt (alet e3,alet e4)
-  | Exp.Le (e3,e4) -> Exp.Le (alet e3,alet e4)
-  | Exp.Ge (e3,e4) -> Exp.Ge (alet e3,alet e4)
-  | Exp.Apply (e3,e4) -> Exp.Apply (alet e3,alet e4)
-  | Exp.Annot (e,t) -> Exp.Annot(alet e,t)
-  | Exp.Tuple xs -> Exp.Tuple (map alet xs)
-;;
-
-let rec inferC env e =
-  match e with
+let rec inferC te exp =
+  match exp with
   | Exp.Int _ -> (Type.Int,[])
   | Exp.Float _ -> (Type.Float,[])
   | Exp.Bool _ -> (Type.Bool,[])
   | Exp.String _ -> (Type.String,[])
   | Exp.Not e ->
-      let (t,c) = inferC env e in
+      let (t,c) = inferC te e in
       let c' = (t,Type.Bool)::c in
       (Type.Bool,c')
   | Exp.If (e1,e2,e3) ->
-      let (t1,c1) = inferC env e1 in
-      let (t2,c2) = inferC env e2 in
-      let (t3,c3) = inferC env e3 in
+      let (t1,c1) = inferC te e1 in
+      let (t2,c2) = inferC te e2 in
+      let (t3,c3) = inferC te e3 in
       let c = (t1,Type.Bool)::(t2,t3)::(c1 @ c2 @ c3) in
       (t2,c)
   | Exp.Let (s,e1,e2) ->
-      let e2 = assign_let (s,e1) e2 in
-      let _ = inferC env e1 in
-      inferC env e2
+      let x = fresh() in
+      let (t1,c1) = inferC ((s,x)::te) e1 in
+      let (t2,_) = inferC ((s,t1)::te) e2 in
+      (t2,c1)
   | Exp.LetRec (s,e1,e2) ->
       let x = fresh() in
-      let (t1,c1) = inferC ((s,x)::env) e1 in
-      let (t2,c2) = inferC ((s,x)::env) e2 in
+      let (t1,c1) = inferC ((s,x)::te) e1 in
+      let (t2,c2) = inferC ((s,x)::te) e2 in
       (t2,(x,t1)::c1@c2)
   | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
+      let ((t1,c1),(t2,c2)) = (inferC te e1,inferC te e2) in
       let c1 = (t1,Type.Bool)::c1 in
       let c2 = (t2,Type.Bool)::c2 in
       (Type.Bool,c1@c2)
   | Exp.IAdd (e1,e2) | Exp.ISub (e1,e2) | Exp.IMul (e1,e2) | Exp.IDiv (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
+      let ((t1,c1),(t2,c2)) = (inferC te e1,inferC te e2) in
       let c1 = (t1,Type.Int)::c1 in
       let c2 = (t2,Type.Int)::c2 in
       (Type.Int,c1@c2)
   | Exp.FAdd (e1,e2) | Exp.FSub (e1,e2) | Exp.FMul (e1,e2) | Exp.FDiv (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
+      let ((t1,c1),(t2,c2)) = (inferC te e1,inferC te e2) in
       let c1 = (t1,Type.Float)::c1 in
       let c2 = (t2,Type.Float)::c2 in
       (Type.Float,c1@c2)
   | Exp.Eq (e1,e2) | Exp.Ne (e1,e2) | Exp.Lt (e1,e2) | Exp.Gt (e1,e2)
   | Exp.Le (e1,e2) | Exp.Ge (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
+      let ((t1,c1),(t2,c2)) = (inferC te e1,inferC te e2) in
       let c = (t1,t2)::(c1@c2)  in
       (Type.Bool,c)
   | Exp.Fun (s,e) ->
       let t1 = fresh() in
-      let env = (s,t1)::env in
-      let (t2,c) = inferC env e in
+      let te = (s,t1)::te in
+      let (t2,c) = inferC te e in
       (Type.Fun (t1,t2),c)
   | Exp.Var s ->
-      (lookup env s,[])
+      (lookup te s,[])
   | Exp.Apply (e1,e2) ->
-      let ((t1,c1),(t2,c2)) = (inferC env e1,inferC env e2) in
+      let ((t1,c1),(t2,c2)) = (inferC te e1,inferC te e2) in
       let x = fresh() in
       let c' = (t1,Type.Fun (t2,x))::c1@c2 in
       (x,c')
   | Exp.Annot (e,t) ->
-      let (t',c) = inferC env e in
+      let (t',c) = inferC te e in
       let c = (t,t')::c in
       (t,c)
   | Exp.Unit -> (Unit,[])
   | Exp.Tuple xs ->
-      let tcs = map (fun e -> inferC env e) xs in
+      let tcs = map (fun e -> inferC te e) xs in
       let c = fold_left (fun x (_,y) -> x@y) [] tcs in
       let ts = map (fun (t,_) -> assign (unify c) t) tcs in
       (Type.Tuple ts,c)
