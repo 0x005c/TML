@@ -1,0 +1,1 @@
+let x = let f x = x in f 123 in x
