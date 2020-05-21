@@ -57,6 +57,7 @@ let rec occur x t =
   | Type.Int | Type.Float | Type.Bool | Type.String | Type.Unit -> ()
   | Type.Fun (t1,t2) -> occur x t1; occur x t2
   | Type.Tuple ts -> List.fold_left f () ts
+  | Type.Scheme (_,t) -> occur x t
 ;;
 
 let rec unify c =
@@ -65,6 +66,8 @@ let rec unify c =
   | (s,t)::c' ->
       if s==t then unify c'
       else match (s,t) with
+      | (Type.Scheme (_,s'),_) -> unify ((s',t)::c')
+      | (_,Type.Scheme (_,t')) -> unify ((s,t')::c')
       (* 出現検査をしていない *)
       | (Type.Var _,_) ->
           occur s t;
@@ -95,6 +98,37 @@ let addE env (s,e) =
   (tenv,eenv)
 ;;
 
+let uniq ts =
+  List.fold_left (fun ts t -> if mem t ts then ts else t::ts) [] ts
+;;
+
+let rec tyvars_ctx ctx =
+  List.fold_left (fun ts (_,t) -> t::ts) [] ctx |> uniq
+;;
+
+let rec tyvars t =
+  let set =
+    match t with
+    | Type.Int | Type.Float | Type.Bool | Type.String | Type.Unit -> []
+    | Type.Var _ -> [t]
+    | Type.Fun (t1,t2) -> tyvars t1 @ tyvars t2
+    | Type.Tuple ts -> List.fold_left (fun ts t -> ts@tyvars t) [] ts
+    | Type.Scheme _ -> []
+  in
+  uniq set
+;;
+
+let subtract s1 s2 =
+  List.fold_left (fun s3 x -> if List.mem x s2 then s3 else x::s3) [] s1
+;;
+
+let clos ctx t =
+  let tc = tyvars_ctx ctx in
+  let tt = tyvars t in
+  let tvs = subtract tt tc in (* set subtraction tt - tc *)
+  if tvs == [] then t else Type.Scheme (tvs,t)
+;;
+
 let rec inferC te exp =
   match exp with
   | Exp.Int _ -> (Type.Int,[])
@@ -112,10 +146,11 @@ let rec inferC te exp =
       let c = (t1,Type.Bool)::(t2,t3)::(c1 @ c2 @ c3) in
       (t2,c)
   | Exp.Let (s,e1,e2) ->
-      let x = fresh() in
-      let (t1,c1) = inferC ((s,x)::te) e1 in
-      let (t2,_) = inferC ((s,t1)::te) e2 in
-      (t2,c1)
+      let (t1,c1) = inferC te e1 in
+      let asgn = unify c1 in
+      let a = clos te (assign asgn t1) in
+      let (t2,c2) = inferC ((s,a)::te) e2 in
+      (t2,c2)
   | Exp.LetRec (s,e1,e2) ->
       let x = fresh() in
       let (t1,c1) = inferC ((s,x)::te) e1 in

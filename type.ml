@@ -9,6 +9,7 @@ type typ =
   | Var of int
   | Unit
   | Tuple of typ list
+  | Scheme of typ list * typ
 ;;
 
 let rec type_to_string t =
@@ -24,6 +25,8 @@ let rec type_to_string t =
       (fun s -> fun x -> s^","^type_to_string x)
       ("("^type_to_string x) xs ^ ")"
   | Tuple [] -> Printf.eprintf "broken tuple\n" ; exit 1
+  | Scheme (ts,t) -> "(forall"^List.fold_left (fun s t -> s
+      ^" "^type_to_string t) "" ts^"."^type_to_string t^")"
 ;;
 
 let show_type t = printf "%s\n" (type_to_string t) ;;
