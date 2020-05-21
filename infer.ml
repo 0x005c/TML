@@ -153,9 +153,12 @@ let rec inferC te exp =
       (t2,c2)
   | Exp.LetRec (s,e1,e2) ->
       let x = fresh() in
-      let (t1,c1) = inferC ((s,x)::te) e1 in
-      let (t2,c2) = inferC ((s,x)::te) e2 in
-      (t2,(x,t1)::c1@c2)
+      let te' = (s,x)::te in
+      let (t1,c1) = inferC te' e1 in
+      let asgn = unify c1 in
+      let a = clos te' (assign asgn t1) in
+      let (t2,c2) = inferC ((s,a)::te) e2 in
+      (t2,c2)
   | Exp.And (e1,e2) | Exp.Or (e1,e2) ->
       let ((t1,c1),(t2,c2)) = (inferC te e1,inferC te e2) in
       let c1 = (t1,Type.Bool)::c1 in
