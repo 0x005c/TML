@@ -108,7 +108,7 @@ let-math \t-let =
     | \alpha = \text!{clos}_\Gamma\(\sigma\tau_1\)
     | \tj{\Gamma,x=\alpha}{t_2}{\tau_2}{C_2}
     |}
-    {\tj{\Gamma}{\text!{let\ ${x}\ =\ ${t_1}\ in\ ${t_2}}}{\tau_2}{C}}}
+    {\tj{\Gamma}{\text!{let\ ${x}\ =\ ${t_1}\ in\ ${t_2}}}{\tau_2}{C_2}}}
 
 let-math \t-letrec =
   ${\derive-multi?:{\text!{(T-LetRec)}}!(9cm){
