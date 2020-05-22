@@ -6,13 +6,13 @@ type assign =
 ;;
 
 let unification_error (s,t) =
-  Printf.eprintf "couldn't match type \"%s\" with \"%s\""
+  Printf.eprintf "couldn't match type \"%s\" with \"%s\"\n"
       (Type.type_to_string s) (Type.type_to_string t);
   exit 1
 ;;
 
 let unknown_variable_error s =
-  Printf.eprintf "unknown variable \"%s\"" s;
+  Printf.eprintf "unknown variable \"%s\"\n" s;
   exit 1
 ;;
 
@@ -47,7 +47,7 @@ let rec occur x t =
   let i =
     match x with
     | Type.Var i -> i
-    | _ -> Printf.eprintf "the first argument of occur should be type variable";
+    | _ -> Printf.eprintf "the first argument of occur should be type variable\n";
            exit 1
   in
   let f _ y = occur x y in
